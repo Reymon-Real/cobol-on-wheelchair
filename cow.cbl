@@ -1,88 +1,117 @@
-       identification division.
-       program-id. cow.
+      **************************************
+      *** Author:  Azac                  ***
+      *** License: MIT                   ***
+      *** Date:    DECEMBER 21 FROM 2013 ***
+      *** UPDATE:  AGUST 11 FROM 2022    ***
+      **************************************
 
-       environment division.
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. cow.
+       
+       AUTHOR. AZAC.
+       PROGRAM-WRITTEN.  DECEMBER 21 FROM 2013.
+       PROGRAM-COMPILED. AGUST 11 FROM 2022.
+      
+      *********************************************
+      *** Division where variables are declared ***
+      ***              and                      ***
+      ***        files are described            ***
+      *********************************************
+       DATA DIVISION.
+       
+       WORKING-STORAGE SECTION.
 
-       data division.
-
-       working-storage section.
-
-
-       01 newline         pic x   value x'0a'.
-
-       01 analyzed-query pic x(1600).  
+       77 newline        PIC X VALUE X'0a'.
+       77 analyzed-query PIC X(1600).
 
        01 the-great-dispatch.
+          03  nroutes       PIC 99 USAGE COMP-5.
+          03  routing-table OCCURS 10 TIMES.
+            05   routing-pattern PIC X(999).
+            05   routing-destiny PIC X(999).
 
-          03  nroutes                  pic 99 usage comp-5.
-          03  routing-table            occurs 10 times.
-
-            05   routing-pattern   pic x(999).
-            05   routing-destiny   pic x(999).
-
-                                                                               
-       01 tester         pic x(1) value "n".  
-       01 anyfound       pic x(1) value "n".
-       01 ctr            pic 99 usage comp-5.
+       77 tester   PIC X VALUE "n".  
+       77 anyfound PIC X VALUE "n".
+       77 ctr      PIC 9(2) USAGE COMP-5.
 
        01 the-values.
+          05 query-values OCCURS 10 TIMES.
+            10 query-value-name PIC X(90).
+            10 query-value      PIC X(90).
 
-          05 query-values           occurs 10 times.
-            10 query-value-name     pic x(90).
-            10 query-value          pic x(90).
+      *********************
+      *** Program Logic ***
+      *********************
 
+       PROCEDURE DIVISION.
+      
+      ********************************
+      *** Initialize of main logic ***
+      ********************************
+           COPY "config.cbl".
+      
+      ******************************************
+      *** Procedure for print the web header ***
+      ******************************************
+           PERFORM web-header.
+     
+      *************************************
+      *** Call to the function getquery ***
+      *************************************
+           CALL "getquery" USING analyzed-query.
+      
+      **********************************
+      *** Controller loop for routes ***
+      **********************************
+           PERFORM VARYING ctr FROM 1 BY 1 UNTIL ctr > nroutes
+      
+      *** Verify if the query exist ***
+               CALL 'checkquery'
+               USING analyzed-query routing-pattern(ctr) tester
+               the-values
+      
+      *** End varying perform ***
+           END-PERFORM
+      
+      *** Conditional for to know if the testes equal true ***
+           IF (tester="y")
+      
+      *** Display routing-pattern(ctr) "<hr>" ***
+               MOVE "y" TO anyfound
 
+      *** Display "ctr:" ctr ***
+               CALL routing-destiny(ctr) USING the-values.
 
-       procedure division.
+      *** End Tester IF ***
+           END-IF
+      
+      *************************************
+      *** Check if nothing is available ***
+      *************************************
+           IF (anyfound="n")
+               PERFORM bad-query-error
+      *     ELSE
+      *         CALL "showvars" USING the-values.
+           END-IF
 
-
-       copy "config.cbl".
-
-
-       perform web-header.
-
-       call 'getquery' using analyzed-query.
-
-
-       perform varying ctr from 1 by 1
-             until ctr > nroutes
-
-           call 'checkquery' using analyzed-query routing-pattern(ctr) tester the-values
-
-           if (tester="y")
-
-              *> display routing-pattern(ctr) "<hr>" 
-              move "y" to anyfound
-              *> display "ctr:" ctr
-              call routing-destiny(ctr) using the-values
-
-           end-if
-
-
-       end-perform
-
-
-       if (anyfound="n") perform bad-query-error.
-
-       *> if (anyfound="y")  call 'showvars' using the-values.  
-
-        
-
+      ***********************
+      *** Function Return ***
+      ***********************
        goback.
 
-
-
- bad-query-error.
-
- display "<b>Cobol-on-Wheelchair error:</b> query pattern not found (<i>" function trim(analyzed-query) "</i>)".
-
-
- web-header.
-
-       display
-           "content-type: text/html; charset=utf-8"
-           newline
-       end-display.
+      ********************************
+      *** Handle erroneous queries ***
+      ********************************
+       bad-query-error.
+           DISPLAY "<b>Cobol-on-Wheelchair error:</b>"
+           "query pattern not found (<i>"
+           FUNCTION TRIM(analyzed-query) "</i>)".
+      
+      ************************************
+      *** Show which is the web header ***
+      ************************************
+       web-header.
+           DISPLAY "content-type: text/html; charset=utf-8" newline.
 
 
 
