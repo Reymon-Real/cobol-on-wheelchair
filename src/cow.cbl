@@ -64,7 +64,9 @@
                CALL 'checkquery'
                
                USING analyzed-query 
-                     routing-pattern(ctr) 
+      *              Here is a bug that I couldn't fix
+      *              because I don't know much about the web
+                     routing-pattern(ctr)
                      tester
                      the-values
                
