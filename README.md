@@ -17,7 +17,7 @@ Installation
 ```
 git clone https://github.com/azac/cobol-on-wheelchair/
 cd cobol-on-wheelchair
-./downhill.sh
+make
 ```
 
 Tutorial
