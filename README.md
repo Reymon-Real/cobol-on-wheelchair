@@ -23,4 +23,4 @@ make
 Tutorial
 --------
 
-https://github.com/azac/cobol-on-wheelchair/blob/master/tutorial/index.md
+https://github.com/azac/cobol-on-wheelchair/blob/master/documentation/tutorial/index.md
